@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embed King</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Vue.js 3 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.47"></script>
+    <style>
+        body {
+    font-family: 'Arial', sans-serif;
+}
+.embed-container {
+    margin-top: 20px;
+    padding: 10px;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.embed-container iframe, .embed-container video, .embed-container img {
+    width: 100%;
+    height: auto;
+    transition: all 0.3s ease-in-out;
+}
+
+.embed-container.full-screen iframe,
+.embed-container.full-screen video,
+.embed-container.full-screen img {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999; /* Make sure it's on top of other content */
+}
+
+.fullscreen-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 10000; /* Ensure button stays on top */
+}
+
+.fullscreen-button i {
+    font-size: 1.5rem;
+}
+    </style>
+</head>
+<body>
+    <div id="app" class="container mt-5">
+        <h1 class="text-center">Embed King</h1>
+        <div class="mb-4">
+            <label for="dataInput" class="form-label">Paste URL or Embed Code</label>
+            <div class="input-group">
+                <button class="btn btn-outline-secondary" @click="pasteData"><i class="fas fa-paste"></i></button>
+                <input type="text" class="form-control" id="dataInput" v-model="url" placeholder="Paste your URL here" />
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label for="embedType" class="form-label">Select Embed Type</label>
+            <select class="form-select" id="embedType" v-model="embedType">
+                <option value="iframe">Iframe</option>
+                <option value="video">Video</option>
+                <option value="image">Image</option>
+                <option value="hls">HLS</option>
+            </select>
+        </div>
+
+        <button class="btn btn-primary" @click="embedContent">Embed</button>
+
+        <div class="embed-container mt-4" v-if="embeddedContent" :class="{'full-screen': isFullScreen}">
+            <h4>Embedded Content</h4>
+            <div v-if="embedType === 'iframe'">
+                <iframe :src="url" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div v-if="embedType === 'video'">
+                <video controls>
+                    <source :src="url" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div v-if="embedType === 'image'">
+                <img :src="url" alt="Embedded Image" />
+            </div>
+            <div v-if="embedType === 'hls'">
+                <video controls>
+                    <source :src="url" type="application/x-mpegURL">
+                    Your browser does not support the HLS format.
+                </video>
+            </div>
+            <button class="fullscreen-button" @click="toggleFullScreen">
+                <i class="fas" :class="isFullScreen ? 'fa-compress' : 'fa-expand'"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    url: '',
+                    embedType: 'iframe',
+                    embeddedContent: false,
+                    isFullScreen: false,
+                };
+            },
+            methods: {
+                pasteData() {
+                    navigator.clipboard.readText().then((text) => {
+                        this.url = text;
+                    });
+                },
+                embedContent() {
+                    this.embeddedContent = true;
+                },
+                toggleFullScreen() {
+                    this.isFullScreen = !this.isFullScreen;
+                }
+            }
+        }).mount('#app');
+    </script>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+      </html>
